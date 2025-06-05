@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Choix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 20px 0;
+        }
+        
+        .sidebar h3 {
+            padding: 0 20px 20px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: #f8f9fa;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .choices-section {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .choice-item {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .choice-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .choice-description {
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .no-choices {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+        
+        .add-choice-btn {
+            background: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 3px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        
+        .add-choice-btn:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Navigation Sidebar -->
+        <nav class="sidebar">
+            <h3>Navigation</h3>
+            <a href="{% url 'dashboard' %}" class="nav-item">Dashboard</a>
+            <a href="{% url 'profile' %}" class="nav-item">Profil Personnel</a>
+            <a href="{% url 'preferences_edit' %}" class="nav-item">Mes Préférences</a>
+            <a href="{% url 'my_choices' %}" class="nav-item active">Mes Choix</a>
+            <a href="{% url 'recommendations' %}" class="nav-item">Voir mes Recommandations</a>
+            <a href="{% url 'logout' %}" class="nav-item" style="color: #dc3545; margin-top: 20px;">Déconnexion</a>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1>Mes Choix</h1>
+            
+            <div class="choices-section">
+                <h2>Vos Choix Actuels</h2>
+                <p>Basé sur vos préférences: {{ preferences.get_domaine_etude_display }} - {{ preferences.get_type_diplome_display }}</p>
+                
+                <!-- This is where you would list user's actual choices -->
+                <!-- For now, showing example choices based on preferences -->
+                
+                {% if preferences.domaine_etude == 'informatique' %}
+                    <div class="choice-item">
+                        <div class="choice-title">Développement Web</div>
+                        <div class="choice-description">Spécialisation dans les technologies web modernes, frameworks JavaScript et développement full-stack.</div>
+                    </div>
+                    <div class="choice-item">
+                        <div class="choice-title">Intelligence Artificielle</div>
+                        <div class="choice-description">Formation approfondie en machine learning, deep learning et applications IA.</div>
+                    </div>
+                    <div class="choice-item">
+                        <div class="choice-title">Cybersécurité</div>
+                        <div class="choice-description">Sécurité des systèmes informatiques, cryptographie et protection des données.</div>
+                    </div>
+                {% elif preferences.domaine_etude == 'medecine' %}
+                    <div class="choice-item">
+                        <div class="choice-title">Médecine Générale</div>
+                        <div class="choice-description">Formation complète en médecine générale et soins primaires.</div>
+                    </div>
+                    <div class="choice-item">
+                        <div class="choice-title">Chirurgie</div>
+                        <div class="choice-description">Spécialisation chirurgicale avec formation pratique intensive.</div>
+                    </div>
+                    <div class="choice-item">
+                        <div class="choice-title">Cardiologie</div>
+                        <div class="choice-description">Spécialisation dans les maladies cardiovasculaires et interventions cardiaques.</div>
+                    </div>
+                {% else %}
+                    <div class="choice-item">
+                        <div class="choice-title">Option Principale</div>
+                        <div class="choice-description">Formation principale dans votre domaine d'étude: {{ preferences.get_domaine_etude_display }}</div>
+                    </div>
+                    <div class="choice-item">
+                        <div class="choice-title">Spécialisation Avancée</div>
+                        <div class="choice-description">Approfondissement des connaissances avec focus sur {{ preferences.get_interet_display }}</div>
+                    </div>
+                {% endif %}
+                
+                <a href="#" class="add-choice-btn">Ajouter un nouveau choix</a>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

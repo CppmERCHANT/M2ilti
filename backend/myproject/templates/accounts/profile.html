@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Personnel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 20px 0;
+        }
+        
+        .sidebar h3 {
+            padding: 0 20px 20px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background-color: #f8f9fa;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .profile-section {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .profile-item {
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .profile-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .profile-value {
+            color: #333;
+        }
+        
+        .edit-btn {
+            background: #007bff;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 3px;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        
+        .edit-btn:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Navigation Sidebar -->
+        <nav class="sidebar">
+            <h3>Navigation</h3>
+            <a href="{% url 'dashboard' %}" class="nav-item">Dashboard</a>
+            <a href="{% url 'profile' %}" class="nav-item active">Profil Personnel</a>
+            <a href="{% url 'preferences_edit' %}" class="nav-item">Mes Préférences</a>
+            <a href="{% url 'my_choices' %}" class="nav-item">Mes Choix</a>
+            <a href="{% url 'recommendations' %}" class="nav-item">Voir mes Recommandations</a>
+            <a href="{% url 'logout' %}" class="nav-item" style="color: #dc3545; margin-top: 20px;">Déconnexion</a>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <h1>Profil Personnel</h1>
+            
+            <div class="profile-section">
+                <h2>Informations Personnelles</h2>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Prénom:</div>
+                    <div class="profile-value">{{ user.prenom }}</div>
+                </div>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Nom:</div>
+                    <div class="profile-value">{{ user.nom }}</div>
+                </div>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Email:</div>
+                    <div class="profile-value">{{ user.email }}</div>
+                </div>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Numéro National:</div>
+                    <div class="profile-value">{{ user.numero_national }}</div>
+                </div>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Date d'inscription:</div>
+                    <div class="profile-value">{{ user.date_creation|date:"d/m/Y à H:i" }}</div>
+                </div>
+                
+                {% if user.carte_identite %}
+                <div class="profile-item">
+                    <div class="profile-label">Carte d'identité:</div>
+                    <div class="profile-value">
+                        <img src="{{ user.carte_identite.url }}" alt="Carte d'identité" style="max-width: 200px; height: auto;">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            {% if preferences %}
+            <div class="profile-section">
+                <h2>Préférences Académiques</h2>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Domaine d'étude:</div>
+                    <div class="profile-value">{{ preferences.get_domaine_etude_display }}</div>
+                </div>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Type de diplôme:</div>
+                    <div class="profile-value">{{ preferences.get_type_diplome_display }}</div>
+                </div>
+                
+                <div class="profile-item">
+                    <div class="profile-label">Intérêt professionnel:</div>
+                    <div class="profile-value">{{ preferences.get_interet_display }}</div>
+                </div>
+                
+                <a href="{% url 'preferences_edit' %}" class="edit-btn">Modifier mes préférences</a>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</body>
+</html>

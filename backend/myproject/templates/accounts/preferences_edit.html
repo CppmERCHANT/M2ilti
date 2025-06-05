@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier les Préférences</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .preferences-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e1e5e9;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .btn-secondary {
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .header-text {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header-text h2 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .header-text p {
+            color: #666;
+            font-size: 16px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        .current-preferences {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .current-preferences h5 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .preference-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .preference-item:last-child {
+            border-bottom: none;
+        }
+        .preference-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+        .preference-value {
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="preferences-container">
+            <div class="header-text">
+                <div class="icon">⚙️</div>
+                <h2>Modifier vos Préférences</h2>
+                <p>Mettez à jour vos préférences selon vos besoins actuels.</p>
+            </div>
+
+            <!-- Current Preferences Display -->
+            <div class="current-preferences">
+                <h5>📋 Préférences Actuelles</h5>
+                <div class="preference-item">
+                    <span class="preference-label">Domaine d'étude:</span>
+                    <span class="preference-value">{{ preferences.get_domaine_etude_display }}</span>
+                </div>
+                <div class="preference-item">
+                    <span class="preference-label">Type de diplôme:</span>
+                    <span class="preference-value">{{ preferences.get_type_diplome_display }}</span>
+                </div>
+                <div class="preference-item">
+                    <span class="preference-label">Intérêt professionnel:</span>
+                    <span class="preference-value">{{ preferences.get_interet_display }}</span>
+                </div>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.domaine_etude.id_for_label }}" class="form-label">
+                        📚 {{ form.domaine_etude.label }}
+                    </label>
+                    {{ form.domaine_etude }}
+                    {% if form.domaine_etude.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.domaine_etude.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.type_diplome.id_for_label }}" class="form-label">
+                        🎓 {{ form.type_diplome.label }}
+                    </label>
+                    {{ form.type_diplome }}
+                    {% if form.type_diplome.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.type_diplome.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="{{ form.interet.id_for_label }}" class="form-label">
+                        💼 {{ form.interet.label }}
+                    </label>
+                    {{ form.interet }}
+                    {% if form.interet.errors %}
+                        <div class="text-danger small mt-1">
+                            {% for error in form.interet.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary me-md-2">
+                        Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        Mettre à jour
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

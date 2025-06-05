@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommandations - Système de Recommandation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .status { padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center; }
+        .status.online { background-color: #d4edda; color: #155724; }
+        .status.offline { background-color: #f8d7da; color: #721c24; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; min-height: 100px; resize: vertical; }
+        button { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .results { margin-top: 20px; }
+        .sentiment { padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .sentiment.positive { background-color: #d4edda; color: #155724; }
+        .sentiment.negative { background-color: #f8d7da; color: #721c24; }
+        .sentiment.neutral { background-color: #fff3cd; color: #856404; }
+        .recommendation { background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px; padding: 15px; margin-bottom: 10px; }
+        .recommendation:hover { background-color: #e9ecef; }
+        .loading { text-align: center; margin: 20px 0; }
+        .error { background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .nav { margin-bottom: 20px; }
+        .nav a { text-decoration: none; color: #007bff; margin-right: 15px; }
+        .nav a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="{% url 'dashboard' %}">Tableau de bord</a>
+            <a href="{% url 'my_choices' %}">Mes choix</a>
+            <a href="{% url 'recommendations' %}">Recommandations</a>
+            <a href="{% url 'profile' %}">Profil</a>
+            <a href="{% url 'logout' %}">Déconnexion</a>
+        </div>
+
+        <div class="header">
+            <h1>Système de Recommandation Intelligent</h1>
+            <p>Obtenez des recommandations personnalisées basées sur vos intérêts</p>
+        </div>
+
+        <!-- ML Service Status -->
+        {% if ml_status %}
+            <div class="status online">
+                Service ML en ligne - {{ ml_status.total_formations }} formations disponibles
+                {% if ml_status.model_loaded %}(Modèle personnalisé chargé){% endif %}
+            </div>
+        {% else %}
+            <div class="status offline">
+                Service ML hors ligne - Les recommandations ne sont pas disponibles
+            </div>
+        {% endif %}
+
+        <!-- Input Form -->
+        <form method="post" id="recommendationForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="user_input">Décrivez vos intérêts ou ce que vous cherchez :</label>
+                <textarea 
+                    id="user_input" 
+                    name="user_input" 
+                    placeholder="Par exemple: Je veux apprendre le management, améliorer mes compétences en anglais, ou me former en informatique..."
+                    required
+                    {% if not ml_status %}disabled{% endif %}
+                ></textarea>
+            </div>
+            
+            <button type="submit" {% if not ml_status %}disabled{% endif %}>
+                Obtenir des recommandations
+            </button>
+        </form>
+
+        <!-- Loading indicator -->
+        <div id="loading" class="loading" style="display: none;">
+            <p>Génération des recommandations en cours...</p>
+        </div>
+
+        <!-- Results -->
+        {% if recommendations_data %}
+            <div class="results">
+                <!-- Sentiment Analysis -->
+                {% with sentiment=recommendations_data.sentiment %}
+                    <div class="sentiment {% if sentiment.class >= 4 %}positive{% elif sentiment.class <= 2 %}negative{% else %}neutral{% endif %}">
+                        <strong>Analyse de sentiment :</strong> 
+                        {{ sentiment.label }} ({{ sentiment.confidence|floatformat:3 }})
+                    </div>
+                {% endwith %}
+
+                <!-- Recommendations -->
+                {% if recommendations_data.recommendations %}
+                    <h3>Recommandations ({{ recommendations_data.total_recommendations }})</h3>
+                    {% for rec in recommendations_data.recommendations %}
+                        <div class="recommendation">
+                            <div><strong>{{ rec.text }}</strong></div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                Score de similarité: {{ rec.similarity_score }} | 
+                                Score hybride: {{ rec.hybrid_score }}
+                                {% if rec.keyword_relevance > 0 %} | Pertinence mots-clés: {{ rec.keyword_relevance }}{% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="error">
+                        Aucune recommandation trouvée pour votre recherche.
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- User Preferences Info -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <h4>Vos préférences actuelles :</h4>
+            <p><strong>Domaine :</strong> {{ preferences.get_domaine_etude_display }}</p>
+            <p><strong>Type de diplôme :</strong> {{ preferences.get_type_diplome_display }}</p>
+            <p><strong>Intérêt :</strong> {{ preferences.get_interet_display }}</p>
+            <a href="{% url 'preferences_edit' %}">Modifier mes préférences</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('recommendationForm').addEventListener('submit', function() {
+            document.getElementById('loading').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

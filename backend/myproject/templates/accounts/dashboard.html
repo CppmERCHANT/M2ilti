@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            padding: 20px 0;
+        }
+        
+        .sidebar h3 {
+            padding: 0 20px 20px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .nav-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .welcome-section {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        .preferences-section {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .user-info {
+            margin-bottom: 15px;
+        }
+        
+        .preference-item {
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .preference-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .preference-value {
+            color: #333;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Left Navigation Sidebar -->
+        <nav class="sidebar">
+            <h3>Navigation</h3>
+            <a href="{% url 'dashboard' %}" class="nav-item">Dashboard</a>
+            <a href="{% url 'profile' %}" class="nav-item">Profil Personnel</a>
+            <a href="{% url 'preferences_edit' %}" class="nav-item">Mes Préférences</a>
+            <a href="{% url 'my_choices' %}" class="nav-item">Mes Choix</a>
+            <a href="{% url 'recommendations' %}" class="nav-item">Voir mes Recommandations</a>
+            <a href="{% url 'logout' %}" class="nav-item" style="color: #dc3545; margin-top: 20px;">Déconnexion</a>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="welcome-section">
+                <h1>Bienvenue, {{ user.prenom }} {{ user.nom }}!</h1>
+                <div class="user-info">
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Numéro National:</strong> {{ user.numero_national }}</p>
+                    <p><strong>Membre depuis:</strong> {{ user.date_creation|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+            
+            <div class="preferences-section">
+                <h2>Vos Préférences Actuelles</h2>
+                <div class="preference-item">
+                    <div class="preference-label">Domaine d'étude:</div>
+                    <div class="preference-value">{{ preferences.get_domaine_etude_display }}</div>
+                </div>
+                <div class="preference-item">
+                    <div class="preference-label">Type de diplôme:</div>
+                    <div class="preference-value">{{ preferences.get_type_diplome_display }}</div>
+                </div>
+                <div class="preference-item">
+                    <div class="preference-label">Intérêt professionnel:</div>
+                    <div class="preference-value">{{ preferences.get_interet_display }}</div>
+                </div>
+                <div class="preference-item">
+                    <div class="preference-label">Dernière modification:</div>
+                    <div class="preference-value">{{ preferences.date_modification|date:"d/m/Y à H:i" }}</div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
